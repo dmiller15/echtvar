@@ -15,6 +15,8 @@ use std::str;
 
 use zip::write::FileOptions;
 
+use ieee754::Ieee754;
+
 #[inline]
 fn get_int_field<'a, B: BorrowMut<Buffer> + Borrow<Buffer> + 'a>(
     rec: &Record,
@@ -44,7 +46,7 @@ fn get_float_field<'a, B: BorrowMut<Buffer> + Borrow<Buffer> + 'a>(
         .float()
         .unwrap_or(None) // this becomes default below.
     {
-        Some(v) => v[0],
+        Some(v) => if v[0].bits() == 0x7F800001 { default } else { v[0] },
         None => default,
     };
 }
